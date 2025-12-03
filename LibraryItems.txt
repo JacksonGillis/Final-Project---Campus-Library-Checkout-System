@@ -1,0 +1,10 @@
+1 | Garfield | Book | 0.50
+2 | Lord of The Flies | Book | 0.50
+3 | Hallmark Christmas Movie | DVD | 0.75
+4 | Black Mirror S. 1 | DVD | 0.75
+5 | Frankenstein | Book | 0.50
+6 | Scrooge | DVD | 0.75
+7 | Journal of Nature Conservation | Journal | 1.50
+8 | University of California Press | News Article | 1.00
+9 | How To Research | Book | 0.50
+10 | How To Code | Book | 0.50
