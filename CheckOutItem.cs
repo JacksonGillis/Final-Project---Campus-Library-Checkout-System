@@ -26,6 +26,10 @@ namespace ConsoleApp5
                 Console.WriteLine(item.Display());              // Displays the entire Items list.
             }
         }
+        public int DaysLate(int NewDay, int DueDate)
+        {
+            return NewDay - DueDate;                                //Subtracts to find the days late.
+        }
 
         public int DueDate(int input)
         { return DayCheckedOut[input] + 5; }                       // Determines the due date by adding 5 to the days checked out (Does it for a specefic item on the list)
