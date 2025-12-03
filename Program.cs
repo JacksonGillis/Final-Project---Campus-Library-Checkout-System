@@ -403,6 +403,8 @@ namespace ConsoleApp5
                     daysLate = newDay - dueDate;                                                      // Finds how late each item is                           
                 }
                 checkoutPrice += checkout.Price(daysLate, i+1);                                     // Prints the item and the amount they owe for that specefic item while also adding up the total.
+                Console.WriteLine($"This item was {daysLate} days late.");                          // Tells you how late the item was.
+                Console.WriteLine("----------------------------------------------");
             }
             Console.WriteLine("=====================================================");
             Console.WriteLine($"Estimated Late fee is ${checkoutPrice}.");
