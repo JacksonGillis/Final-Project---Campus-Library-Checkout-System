@@ -31,5 +31,10 @@ namespace ConsoleApp5
 
         public decimal DailyLate(int daysLate)
         { return DailyLateFee * daysLate; }                         // Multiplies the daily late fee by the days late for a select item in the list.
+
+        public int ItemID()
+        {
+            return ID;                                         // To find where the placement on the Items list from the CheckOutItem class is.
+        }
     }
 }
