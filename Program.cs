@@ -275,11 +275,12 @@ namespace ConsoleApp5
                     }
                     for (int i = 0; i < checkout.Items.Count(); i++)
                     {
-                        Console.WriteLine($"{i + 1} --------- {checkout.Items[i].Display()}");                  // Shows all the items that can be returned by showcasing the item list in the checkout class, I listed them 1 to n at the start to ensure that the user input would be accurate.
+                        Console.WriteLine($"{checkout.Items[i].Display()}");                  // Shows all the items that can be returned by showcasing the item list in the checkout class, I listed them 1 to n at the start to ensure that the user input would be accurate.
                     }
-                    Console.WriteLine("Please select the number of the item you want to Checkout!");
-                    int Input = Convert.ToInt32(Console.ReadLine());
-                    if ((Input < 1) || (Input > checkout.Items.Count())) { throw new FormatException(); }
+                    Console.WriteLine("Please select the ID of the item you want to Return!");
+                    int InputID = Convert.ToInt32(Console.ReadLine());
+                    int Input = checkout.FindID(InputID);                                                  //Finds which part of the list 
+                    if (Input == -1) { throw new FormatException();}
                     int checkedOutDay = checkout.DayCheckedOut[Input - 1];                                     // Finds the day that the item was checked out with the input due to them being parallel lists.
                     Console.WriteLine($"You checked out this item on day {checkedOutDay}.\n");
 
@@ -288,7 +289,7 @@ namespace ConsoleApp5
                     {
                         int daysLate = checkout.DaysLate(newDay, dueDate);                                                      // Determines how late the object is based by subtracting the new day by the due date.
                         decimal price = checkout.Price(daysLate, Input);                                        // Finds the price by calling the a function in the checkoutitem class which calls on a function in the list class which multiplies the days late by the rate per day if late.
-                        TotalPrice =+ price;                                                                    // Finds the total price of the items you returned for the reciept function.
+                        TotalPrice += price;                                                                    // Finds the total price of the items you returned for the reciept function.
                     }
                     else { Console.WriteLine("Returned on time!"); }
                     checkout.Items.RemoveAt(Input - 1);                                                          // Removes the item from the checked out list
@@ -406,7 +407,7 @@ namespace ConsoleApp5
             Console.WriteLine("=====================================================");
             Console.WriteLine($"Estimated Late fee is ${checkoutPrice}.");
             Console.WriteLine("=====================================================");
-            Console.WriteLine($"Your total price is ${Math.Round((TotalPrice + checkoutPrice) * Discount, 2}");               // The entire price.
+            Console.WriteLine($"Your total price is ${Math.Round((TotalPrice + checkoutPrice) * Discount, 2)}");               // The entire price.
             Console.WriteLine("Press any key to continue!");
             Console.ReadKey();
         }
