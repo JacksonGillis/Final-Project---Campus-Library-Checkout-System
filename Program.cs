@@ -286,7 +286,7 @@ namespace ConsoleApp5
                     int dueDate = checkout.DueDate(Input - 1);                                                 // Finds the duedate by adding 5 to the date the items were checked out.
                     if (newDay > dueDate)                                                                       // If late... 
                     {
-                        int daysLate = newDay - dueDate;                                                        // Determines how late the object is based by subtracting the new day by the due date.
+                        int daysLate = checkout.DaysLate(newDay, dueDate);                                                      // Determines how late the object is based by subtracting the new day by the due date.
                         decimal price = checkout.Price(daysLate, Input);                                        // Finds the price by calling the a function in the checkoutitem class which calls on a function in the list class which multiplies the days late by the rate per day if late.
                         TotalPrice =+ price;                                                                    // Finds the total price of the items you returned for the reciept function.
                     }
@@ -383,7 +383,13 @@ namespace ConsoleApp5
             ClearScreen();
             int daysLate = 0;
             decimal checkoutPrice = 0;
+            decimal Discount = 1;
             int newDay = SetDate();                                                              // Asks for what day they want get the reciept (Incase the user doesnt do it on the day they returned their items)
+            if (newDay == 7)
+            {
+                Discount = 0.8m;                                                                  // adds the student discount if the day is 7
+                Console.WriteLine("Day 7 is Student Discount day! You get a 10% discount on your fees!");
+            }
             if (newDay < CurrentDay) { Console.WriteLine("You can't time travel."); return; }    // Ensures its not less than current day.
             Console.WriteLine("=====================================================");
             Console.WriteLine($"You owe ${TotalPrice} For the items you returned late.");        // Total price is from the return function and its the total of the amount they owe from the items they returned.
@@ -396,12 +402,14 @@ namespace ConsoleApp5
                     daysLate = newDay - dueDate;                                                      // Finds how late each item is                           
                 }
                 checkoutPrice += checkout.Price(daysLate, i+1);                                     // Prints the item and the amount they owe for that specefic item while also adding up the total.
-                
             }
             Console.WriteLine("=====================================================");
-            Console.WriteLine($"Your total price is ${TotalPrice + checkoutPrice}");               // The entire price.
+            Console.WriteLine($"Estimated Late fee is ${checkoutPrice}.");
+            Console.WriteLine("=====================================================");
+            Console.WriteLine($"Your total price is ${Math.Round((TotalPrice + checkoutPrice) * Discount, 2}");               // The entire price.
             Console.WriteLine("Press any key to continue!");
             Console.ReadKey();
         }
     }
 }
+// STUDENT DISCOUNT DAY IS 7
