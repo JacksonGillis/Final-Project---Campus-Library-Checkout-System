@@ -40,6 +40,17 @@ namespace ConsoleApp5
             Console.WriteLine($"{Items[input - 1].Display()}        You owe ${price}");              //Displays the item and the price they owe.
             return price;                                                                    // Returns the price for the item so it can be added up.
         }
-       
+
+        public int FindID(int input)
+        {
+            for (int i = 0; i<Items.Count(); i++)
+            {
+                if (input == Items[i].ItemID())                                    // Finds which ID correlates to the position on the Items list
+                {
+                    return i+1;                                                   // Returns where it is on the list
+                }
+            }
+            return -1;                                                        // If its not on the list, it returns -1 which results in an catch.
+        }
     }
 }
