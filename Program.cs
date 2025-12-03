@@ -125,13 +125,13 @@ namespace ConsoleApp5
                 if (UserInput == 3)
                 { Checkout(list, CurrentDay, checkout); UserInput = MainMenu(); }
                 if (UserInput == 4)
-                { TotalPrice = ReturnItem(list, CurrentDay, checkout); UserInput = MainMenu(); }          // The total price equals this function as it is later used to find the reciepts total return price.
+                { TotalPrice = ReturnItem(list, CurrentDay, checkout, TotalPrice); UserInput = MainMenu(); }          // The total price equals this function as it is later used to find the reciepts total return price.
                 if (UserInput == 5)
                 { Receipt(checkout, TotalPrice, CurrentDay); UserInput = MainMenu(); }
                 if (UserInput == 6)
-                { Save(checkout); UserInput = MainMenu(); }
+                { Save(checkout, TotalPrice); UserInput = MainMenu(); }
                 if (UserInput == 7)
-                { Load(checkout); UserInput = MainMenu(); }
+                { TotalPrice = Load(checkout, TotalPrice); UserInput = MainMenu(); }                                  // The total price is additionally saved when you save, so it returns it when you load.
             }
             Console.WriteLine("Thank you for using my program!");
             File.WriteAllText("Availability.txt", "");
@@ -183,7 +183,7 @@ namespace ConsoleApp5
                     File.AppendAllText("Availability.txt", $"\ntrue");                            // Adds that the availability for this is true since it just got added.
                 }
             }
-            catch (FormatException) { Console.WriteLine("Invalid Input"); AddItem(list); }
+            catch (FormatException) { Console.WriteLine("Invalid Input"); return; }
         }
 
 
@@ -257,13 +257,12 @@ namespace ConsoleApp5
         }
 
 
-        public static decimal ReturnItem(List<Lists> list, int CurrentDay, CheckOutItem checkout)
+        public static decimal ReturnItem(List<Lists> list, int CurrentDay, CheckOutItem checkout, decimal TotalPrice)
         {
             try
             {
                 bool Continue = true;
-                int newDay = SetDate();                          // Creates a new day that is meant to repersent the future when the person is returning their item
-                decimal totalPrice = 0;                          // Adds to the total price later for the reciept function.
+                int newDay = SetDate();                          // Creates a new day that is meant to repersent the future when the person is returning their item                         
                 while (Continue == true)
                 {
                     
@@ -289,7 +288,7 @@ namespace ConsoleApp5
                     {
                         int daysLate = newDay - dueDate;                                                        // Determines how late the object is based by subtracting the new day by the due date.
                         decimal price = checkout.Price(daysLate, Input);                                        // Finds the price by calling the a function in the checkoutitem class which calls on a function in the list class which multiplies the days late by the rate per day if late.
-                        totalPrice = +price;                                                                    // Finds the total price of the items you returned for the reciept function.
+                        TotalPrice =+ price;                                                                    // Finds the total price of the items you returned for the reciept function.
                     }
                     else { Console.WriteLine("Returned on time!"); }
                     checkout.Items.RemoveAt(Input - 1);                                                          // Removes the item from the checked out list
@@ -300,17 +299,17 @@ namespace ConsoleApp5
                 }
                 Console.WriteLine("Press any key to continue!");
                 Console.ReadKey();
-                return totalPrice;                                                                              // Which is later used in the reciept function
+                return TotalPrice;                                                                              // Which is later used in the reciept function
                  
             }
             catch
             {
-                new FormatException(); Console.WriteLine("Incorrect Input"); return ReturnItem(list, CurrentDay, checkout);
+                new FormatException(); Console.WriteLine("Incorrect Input"); return ReturnItem(list, CurrentDay, checkout, TotalPrice);
             }
         }
 
 
-        public static void Save(CheckOutItem checkout)
+        public static void Save(CheckOutItem checkout, decimal TotalPrice)
         {
             Console.WriteLine("Do you want to save your checkout list? (Y/N)");
             string input = Console.ReadLine();
@@ -319,6 +318,7 @@ namespace ConsoleApp5
                 int i = 0;
                 File.WriteAllText("CheckoutList.txt", "");                                                   // Creates a new empty file
                 File.WriteAllText("DayCheckedOut.txt", "");                                                  // ^^^^^^^^^^^^^^^^^^^^^^^^
+                File.WriteAllText("TotalPrice.txt", Convert.ToString(TotalPrice));                      // Saves the total price from the removed items.
                 foreach (var item in checkout.Items)                                                   // Parallel lists so they can use the same foreach loop
                 {
                     File.AppendAllText("CheckoutList.txt", $"{item.Display()}\n");
@@ -330,7 +330,7 @@ namespace ConsoleApp5
         }
 
 
-        public static void Load(CheckOutItem checkout)
+        public static decimal Load(CheckOutItem checkout, decimal TotalPrice)
         {
             List<Lists> CheckOutList = new List<Lists>();                                       // Creates a new list of the Lists class.
             int n = 0;
@@ -338,13 +338,13 @@ namespace ConsoleApp5
             string input = Console.ReadLine();
             if (input.ToUpper() == "Y")
             {
-                for (int i = 0; i<checkout.Items.Count; i++)
+                for (int i = 0; i < checkout.Items.Count; i++)
                 {
                     checkout.Items.RemoveAt(n);                                                   // Removes all previous items in the checkout Items list incase they decide to load after checking out stuff.
                 }
                 List<string> Availablilities = Availability();                                  // Creates a new list of the Availability list
-                foreach (var line in File.ReadAllLines("CheckoutList.txt"))                                
-                {                  
+                foreach (var line in File.ReadAllLines("CheckoutList.txt"))
+                {
                     string[] split = line.Split("|");
                     int ID = Convert.ToInt32(split[0]);
                     string Title = split[1];
@@ -358,19 +358,22 @@ namespace ConsoleApp5
                 File.WriteAllText("Availability.txt", "");
                 foreach (var item in Availablilities)
                 {
-                if (item == "Available")
+                    if (item == "Available")
                     {
                         File.AppendAllText("Availability.txt", "true\n");                                // Recreates the list based off which items are checked out or not.
                     }
                     else
                     {
                         File.AppendAllText("Availability.txt", "false\n");
-                    } 
-                        
+                    }
+
                 }
                 foreach (var line in File.ReadAllLines("DayCheckedOut.txt"))
                 { checkout.DayCheckedOut.Add(Convert.ToInt32(line)); }                                 // Adds the to the list of when they checked out the item in the checkoutitem class.
+                decimal totalPrice = Convert.ToDecimal(File.ReadAllText("TotalPrice.txt"));
+                return totalPrice;
             }
+            else { return TotalPrice;}                                                                   // Returns the same variable if they decide not to load
         }
 
 
